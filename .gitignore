@@ -2,27 +2,40 @@
 
 # dependencies
 node_modules/
+npm-cache/
 
 # Expo
 .expo/
+.expo-shared/
 dist/
 web-build/
 expo-env.d.ts
 
 # Native
 .kotlin/
+
+# bundler cache
 *.orig.*
+
+# test output
+coverage/
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
+*.log
 
 # Metro
 .metro-health-check*
 
+
+# editors
+.idea/
+.vscode/
 # debug
 npm-debug.*
+.env
 yarn-debug.*
 yarn-error.*
 
