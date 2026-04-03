@@ -2,6 +2,16 @@
 
 Mobile-first personal finance app to track money flow, visualize spending, and stay aligned with savings goals.
 
+## Screenshots
+
+| Home | Transactions |
+|---|---|
+| ![Home](assets/previews/home.png) | ![Transactions](assets/previews/transactions.png) |
+
+| Insights | Goals |
+|---|---|
+| ![Insights](assets/previews/insights.png) | ![Goals](assets/previews/goals.png) |
+
 ## Overview
 
 The app helps users:
@@ -72,52 +82,6 @@ eas build -p ios --profile preview-ios-simulator
 Scan this QR code on your Android phone to download/install preview APK:
 
 ![Preview APK QR](https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fexpo.dev%2Fartifacts%2Feas%2Fi9ZChYQ7d8H8g52WCfn8qF.apk)
-
-## Visual Showcase
-
-### Screenshots
-
-Add screenshots to show the latest UI for:
-- Home
-- Transactions
-- Insights
-- Goals
-
-Suggested file paths:
-- assets/previews/home.png
-- assets/previews/transactions.png
-- assets/previews/insights.png
-- assets/previews/goals.png
-
-Markdown template (paste after adding image files):
-
-```md
-| Home | Transactions |
-|---|---|
-| ![Home](assets/previews/home.png) | ![Transactions](assets/previews/transactions.png) |
-
-| Insights | Goals |
-|---|---|
-| ![Insights](assets/previews/insights.png) | ![Goals](assets/previews/goals.png) |
-```
-
-### GIF Demo
-
-Add short walkthrough GIFs for quick product preview:
-- Transaction flow (add/edit/delete)
-- Insights and goals overview
-
-Suggested file paths:
-- assets/previews/transaction-flow.gif
-- assets/previews/insights-goals.gif
-
-Markdown template:
-
-```md
-![Transaction Flow](assets/previews/transaction-flow.gif)
-
-![Insights and Goals](assets/previews/insights-goals.gif)
-```
 
 ## Current Features
 
