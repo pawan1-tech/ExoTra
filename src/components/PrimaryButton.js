@@ -1,7 +1,9 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { Colors, Radius, Spacing } from '../constants/theme';
+import { Radius, Spacing, useThemeColors } from '../constants/theme';
 
 export function PrimaryButton({ label, onPress, variant = 'solid', style }) {
+  const Colors = useThemeColors();
+  const styles = createStyles(Colors);
   const isGhost = variant === 'ghost';
 
   return (
@@ -19,17 +21,23 @@ export function PrimaryButton({ label, onPress, variant = 'solid', style }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (Colors) =>
+  StyleSheet.create({
   base: {
-    borderRadius: Radius.pill,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.md,
+    paddingVertical: 12,
+    paddingHorizontal: Spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 42
+    minHeight: 50
   },
   solid: {
-    backgroundColor: Colors.accent
+    backgroundColor: Colors.accent,
+    shadowColor: Colors.shadow,
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 3
   },
   ghost: {
     borderWidth: 1,
@@ -37,7 +45,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.card
   },
   label: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700'
   },
   labelSolid: {
@@ -47,6 +55,7 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary
   },
   pressed: {
-    opacity: 0.85
+    opacity: 0.92,
+    transform: [{ scale: 0.99 }]
   }
-});
+  });

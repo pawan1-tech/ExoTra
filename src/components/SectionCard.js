@@ -1,7 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { Colors, Radius, Spacing } from '../constants/theme';
+import { Radius, Spacing, useThemeColors } from '../constants/theme';
 
 export function SectionCard({ title, children, rightNode }) {
+  const Colors = useThemeColors();
+  const styles = createStyles(Colors);
+
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -13,14 +16,20 @@ export function SectionCard({ title, children, rightNode }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (Colors) =>
+  StyleSheet.create({
   card: {
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: Radius.lg,
     padding: Spacing.md,
-    gap: Spacing.sm
+    gap: Spacing.md,
+    shadowColor: Colors.shadow,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 2
   },
   header: {
     flexDirection: 'row',
@@ -29,7 +38,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.textPrimary
   }
-});
+  });

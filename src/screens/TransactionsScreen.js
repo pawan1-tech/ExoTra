@@ -1,14 +1,17 @@
-import { useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Alert, Pressable, SectionList, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { EmptyState } from '../components/EmptyState';
-import { PrimaryButton } from '../components/PrimaryButton';
 import { TransactionItem } from '../components/TransactionItem';
-import { Colors, Radius, Spacing } from '../constants/theme';
+import { Radius, Spacing, useThemeColors } from '../constants/theme';
 import { useFinanceStore } from '../store/financeStore';
+import { getTodayISO, getYesterdayISO } from '../utils/date';
 
 const FILTERS = ['all', 'income', 'expense'];
 
 export function TransactionsScreen({ navigation }) {
+  const Colors = useThemeColors();
+  const styles = createStyles(Colors);
   const { width } = useWindowDimensions();
   const transactions = useFinanceStore((state) => state.transactions);
   const deleteTransaction = useFinanceStore((state) => state.deleteTransaction);
@@ -35,6 +38,30 @@ export function TransactionsScreen({ navigation }) {
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
+  const sections = useMemo(() => {
+    const grouped = [];
+    const map = new Map();
+
+    filtered.forEach((item) => {
+      let title = item.date;
+      if (item.date === getTodayISO()) {
+        title = 'Today';
+      } else if (item.date === getYesterdayISO()) {
+        title = 'Yesterday';
+      }
+
+      if (!map.has(title)) {
+        const nextSection = { title, data: [] };
+        map.set(title, nextSection);
+        grouped.push(nextSection);
+      }
+
+      map.get(title).data.push(item);
+    });
+
+    return grouped;
+  }, [filtered]);
+
   const confirmDelete = (id) => {
     Alert.alert('Delete transaction', 'This action cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
@@ -59,16 +86,23 @@ export function TransactionsScreen({ navigation }) {
   return (
     <View style={styles.screen}>
       <View style={[styles.container, { width: contentWidth }]}> 
-      <View style={styles.header}>
-        <Text style={styles.title}>Transactions</Text>
-        <PrimaryButton label="Add" onPress={openAdd} style={styles.headerButton} />
+      <View style={styles.topRow}>
+        <Text style={styles.title}>Transaction</Text>
+        <Pressable style={styles.actionIcon} onPress={openAdd}>
+          <Ionicons name="add" size={20} color={Colors.accent} />
+        </Pressable>
       </View>
+
+      <Pressable style={styles.reportBanner} onPress={() => navigation.navigate('Insights')}>
+        <Text style={styles.reportText}>See your financial insight</Text>
+        <Ionicons name="chevron-forward" size={18} color={Colors.accent} />
+      </Pressable>
 
       <TextInput
         value={query}
         onChangeText={setQuery}
-        placeholder="Search by note, amount, or category"
-        placeholderTextColor="#8A9A91"
+        placeholder="Search transaction"
+        placeholderTextColor={Colors.placeholder}
         style={styles.search}
       />
 
@@ -87,7 +121,7 @@ export function TransactionsScreen({ navigation }) {
         })}
       </View>
 
-      {filtered.length === 0 ? (
+      {sections.length === 0 ? (
         <EmptyState
           title={transactions.length ? 'No matching transactions' : 'No transactions yet'}
           subtitle={transactions.length ? 'Try another search or filter.' : 'Add your first transaction to get started.'}
@@ -95,9 +129,10 @@ export function TransactionsScreen({ navigation }) {
           onActionPress={openAdd}
         />
       ) : (
-        <FlatList
-          data={filtered}
+        <SectionList
+          sections={sections}
           keyExtractor={(item) => item.id}
+          renderSectionHeader={({ section }) => <Text style={styles.sectionTitle}>{section.title}</Text>}
           renderItem={({ item }) => (
             <TransactionItem
               item={item}
@@ -106,6 +141,7 @@ export function TransactionsScreen({ navigation }) {
             />
           )}
           contentContainerStyle={styles.list}
+          stickySectionHeadersEnabled={false}
           ItemSeparatorComponent={() => <View style={{ height: Spacing.sm }} />}
         />
       )}
@@ -114,17 +150,54 @@ export function TransactionsScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (Colors) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: Colors.background,
     padding: Spacing.md,
-    alignItems: 'center',
-    gap: Spacing.sm
+    alignItems: 'center'
   },
   container: {
     flex: 1,
-    gap: Spacing.sm
+    gap: Spacing.md
+  },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: Spacing.xs
+  },
+  title: {
+    color: Colors.textPrimary,
+    fontSize: 30,
+    fontWeight: '800',
+    letterSpacing: 0.2
+  },
+  actionIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.card,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  reportBanner: {
+    marginTop: Spacing.xs,
+    borderRadius: Radius.md,
+    backgroundColor: Colors.accentSoft,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  reportText: {
+    color: Colors.accent,
+    fontSize: 16,
+    fontWeight: '600'
   },
   centered: {
     flex: 1,
@@ -135,19 +208,6 @@ const styles = StyleSheet.create({
   loading: {
     color: Colors.textSecondary,
     fontSize: 15
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  title: {
-    fontSize: 28,
-    color: Colors.textPrimary,
-    fontWeight: '800'
-  },
-  headerButton: {
-    minWidth: 90
   },
   search: {
     borderWidth: 1,
@@ -161,7 +221,7 @@ const styles = StyleSheet.create({
   filters: {
     flexDirection: 'row',
     gap: Spacing.sm,
-    marginBottom: Spacing.sm
+    marginBottom: Spacing.xs
   },
   filterPill: {
     paddingVertical: 8,
@@ -183,7 +243,14 @@ const styles = StyleSheet.create({
   filterTextActive: {
     color: Colors.accent
   },
+  sectionTitle: {
+    color: Colors.textPrimary,
+    fontSize: 30,
+    fontWeight: '800',
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.sm
+  },
   list: {
-    paddingBottom: 120
+    paddingBottom: 132
   }
-});
+  });

@@ -1,18 +1,37 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Colors, Radius, Spacing } from '../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { Radius, Spacing, useThemeColors } from '../constants/theme';
 import { formatCurrency, formatDate } from '../utils/formatters';
 
+const CATEGORY_ICONS = {
+  Food: 'restaurant-outline',
+  Transport: 'car-outline',
+  Shopping: 'bag-outline',
+  Health: 'medkit-outline',
+  Bills: 'receipt-outline',
+  Entertainment: 'game-controller-outline',
+  Salary: 'wallet-outline',
+  Freelance: 'briefcase-outline',
+  Other: 'pricetag-outline'
+};
+
 export function TransactionItem({ item, onPress, onLongPress }) {
+  const Colors = useThemeColors();
+  const styles = createStyles(Colors);
   const isIncome = item.type === 'income';
+  const iconName = CATEGORY_ICONS[item.category] || CATEGORY_ICONS.Other;
 
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} style={({ pressed }) => [styles.container, pressed && styles.pressed]}>
       <View style={styles.left}>
         <View style={[styles.badge, isIncome ? styles.badgeIncome : styles.badgeExpense]}>
-          <Text style={styles.badgeText}>{isIncome ? 'IN' : 'EX'}</Text>
+          <Ionicons name={iconName} size={18} color={isIncome ? Colors.income : Colors.expense} />
         </View>
         <View style={styles.metaWrap}>
-          <Text style={styles.category}>{item.category}</Text>
+          <View style={styles.categoryRow}>
+            <Text style={styles.category}>{item.category}</Text>
+            <Text style={styles.typeText}>{isIncome ? 'Income' : 'Expense'}</Text>
+          </View>
           <Text style={styles.meta}>{formatDate(item.date)}</Text>
           {item.notes ? (
             <Text style={styles.note} numberOfLines={2} ellipsizeMode="tail">
@@ -28,7 +47,8 @@ export function TransactionItem({ item, onPress, onLongPress }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (Colors) =>
+  StyleSheet.create({
   container: {
     backgroundColor: Colors.card,
     borderColor: Colors.border,
@@ -54,28 +74,39 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0
   },
+  categoryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6
+  },
   badge: {
-    width: 34,
-    height: 34,
-    borderRadius: Radius.pill,
+    width: 44,
+    height: 44,
+    borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center'
   },
   badgeIncome: {
-    backgroundColor: '#DDF0E8'
+    backgroundColor: Colors.accentSoft
   },
   badgeExpense: {
-    backgroundColor: '#FDE1E1'
-  },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: Colors.textPrimary
+    backgroundColor: Colors.expenseSoft
   },
   category: {
     fontSize: 15,
     fontWeight: '600',
     color: Colors.textPrimary
+  },
+  typeText: {
+    fontSize: 11,
+    color: Colors.textSecondary,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: Radius.pill,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    overflow: 'hidden'
   },
   meta: {
     fontSize: 12,
@@ -101,4 +132,4 @@ const styles = StyleSheet.create({
   amountExpense: {
     color: Colors.expense
   }
-});
+  });

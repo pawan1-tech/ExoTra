@@ -1,8 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { Colors, Spacing } from '../constants/theme';
+import { Spacing, useThemeColors } from '../constants/theme';
 import { PrimaryButton } from './PrimaryButton';
 
 export function EmptyState({ title, subtitle, actionLabel, onActionPress }) {
+  const Colors = useThemeColors();
+  const styles = createStyles(Colors);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
@@ -12,7 +15,8 @@ export function EmptyState({ title, subtitle, actionLabel, onActionPress }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (Colors) =>
+  StyleSheet.create({
   container: {
     backgroundColor: Colors.card,
     borderWidth: 1,
@@ -37,4 +41,4 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     minWidth: 180
   }
-});
+  });

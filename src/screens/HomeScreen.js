@@ -4,24 +4,27 @@ import { EmptyState } from '../components/EmptyState';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { SectionCard } from '../components/SectionCard';
 import { SummaryCard } from '../components/SummaryCard';
-import { Colors, Spacing } from '../constants/theme';
+import { Spacing, useThemeColors } from '../constants/theme';
 import { useFinanceStore } from '../store/financeStore';
 import { getCategoryBreakdown, getCurrentMonthSavings, getMoneyCoachMessage, getTrackingStreak, getWeeklyTrend } from '../utils/finance';
 import { formatCurrency } from '../utils/formatters';
 
-const chartConfig = {
-  backgroundGradientFrom: '#FFFFFF',
-  backgroundGradientTo: '#FFFFFF',
+const getChartConfig = (Colors) => ({
+  backgroundGradientFrom: Colors.card,
+  backgroundGradientTo: Colors.card,
   decimalPlaces: 0,
   color: (opacity = 1) => `rgba(47, 125, 102, ${opacity})`,
   labelColor: () => Colors.textSecondary,
   propsForBackgroundLines: {
     strokeDasharray: '',
-    stroke: '#E6ECE8'
+    stroke: Colors.chartGrid
   }
-};
+});
 
 export function HomeScreen({ navigation }) {
+  const Colors = useThemeColors();
+  const styles = createStyles(Colors);
+  const chartConfig = getChartConfig(Colors);
   const { width } = useWindowDimensions();
   const hasHydrated = useFinanceStore((state) => state.hasHydrated);
   const hydrationError = useFinanceStore((state) => state.hydrationError);
@@ -33,7 +36,7 @@ export function HomeScreen({ navigation }) {
 
   const contentWidth = Math.min(width - 24, 920);
   const isLargeScreen = width >= 768;
-  const chartWidth = Math.max(contentWidth - 32, 260);
+  const chartWidth = Math.max(300, Math.min(contentWidth - 32, 620));
   const categoryData = getCategoryBreakdown(transactions);
   const weeklyTrend = getWeeklyTrend(transactions);
   const monthlySavings = getCurrentMonthSavings(transactions);
@@ -68,11 +71,11 @@ export function HomeScreen({ navigation }) {
         <Text style={styles.subheading}>Daily clarity for your money choices</Text>
       </View>
 
-      <SummaryCard title="Current Balance" value={formatCurrency(balance)} />
+      <SummaryCard title="Current Balance" value={formatCurrency(balance)} iconName="wallet-outline" />
 
       <View style={[styles.row, isLargeScreen && styles.rowWide]}>
-        <SummaryCard title="Income" value={formatCurrency(totalIncome)} tone="income" />
-        <SummaryCard title="Expenses" value={formatCurrency(totalExpenses)} tone="expense" />
+        <SummaryCard title="Income" value={formatCurrency(totalIncome)} tone="income" iconName="arrow-down-outline" />
+        <SummaryCard title="Expenses" value={formatCurrency(totalExpenses)} tone="expense" iconName="arrow-up-outline" />
       </View>
 
       <SectionCard title="Money Coach" rightNode={<Text style={styles.goalText}>{trackingStreak} day streak</Text>}>
@@ -99,39 +102,55 @@ export function HomeScreen({ navigation }) {
         <>
           <SectionCard title="Category Breakdown">
             {categoryData.length ? (
-              <PieChart
-                data={categoryData.map((item) => ({
-                  name: item.name,
-                  population: item.amount,
-                  color: item.color,
-                  legendFontColor: Colors.textSecondary,
-                  legendFontSize: 12
-                }))}
-                width={chartWidth}
-                height={200}
-                accessor="population"
-                backgroundColor="transparent"
-                chartConfig={chartConfig}
-                paddingLeft="0"
-                absolute
-              />
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.chartScrollContent}
+              >
+                <View style={[styles.chartCenterWrap, { width: chartWidth }]}> 
+                  <PieChart
+                    data={categoryData.map((item) => ({
+                      name: item.name,
+                      population: item.amount,
+                      color: item.color,
+                      legendFontColor: Colors.textSecondary,
+                      legendFontSize: 12
+                    }))}
+                    width={chartWidth}
+                    height={200}
+                    accessor="population"
+                    backgroundColor="transparent"
+                    chartConfig={chartConfig}
+                    paddingLeft="0"
+                    absolute
+                  />
+                </View>
+              </ScrollView>
             ) : (
               <Text style={styles.helperText}>No expense data to show yet.</Text>
             )}
           </SectionCard>
 
           <SectionCard title="Weekly Spending Trend">
-            <LineChart
-              data={{ labels: weeklyTrend.labels, datasets: [{ data: weeklyTrend.data }] }}
-              width={chartWidth}
-              height={220}
-              chartConfig={chartConfig}
-              withVerticalLines={false}
-              withShadow={false}
-              fromZero
-              bezier
-              style={styles.chart}
-            />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chartScrollContent}
+            >
+              <View style={[styles.chartCenterWrap, { width: chartWidth }]}> 
+                <LineChart
+                  data={{ labels: weeklyTrend.labels, datasets: [{ data: weeklyTrend.data }] }}
+                  width={chartWidth}
+                  height={220}
+                  chartConfig={chartConfig}
+                  withVerticalLines={false}
+                  withShadow={false}
+                  fromZero
+                  bezier
+                  style={styles.chart}
+                />
+              </View>
+            </ScrollView>
           </SectionCard>
         </>
       )}
@@ -142,14 +161,15 @@ export function HomeScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (Colors) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: Colors.background
   },
   content: {
     padding: Spacing.md,
-    paddingBottom: 100,
+    paddingBottom: 132,
     gap: Spacing.md,
     alignItems: 'center'
   },
@@ -157,15 +177,17 @@ const styles = StyleSheet.create({
     gap: Spacing.md
   },
   heading: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '800',
     color: Colors.textPrimary,
-    marginTop: Spacing.sm
+    marginTop: Spacing.sm,
+    letterSpacing: 0.2
   },
   subheading: {
-    marginTop: 4,
+    marginTop: 6,
     color: Colors.textSecondary,
-    fontSize: 14
+    fontSize: 15,
+    lineHeight: 22
   },
   row: {
     flexDirection: 'row',
@@ -176,13 +198,14 @@ const styles = StyleSheet.create({
   },
   goalText: {
     color: Colors.accent,
-    fontWeight: '700'
+    fontWeight: '700',
+    fontSize: 13
   },
   progressTrack: {
     width: '100%',
     height: 12,
     borderRadius: 999,
-    backgroundColor: '#E4EEE8',
+    backgroundColor: Colors.accentSoft,
     overflow: 'hidden'
   },
   progressFill: {
@@ -196,7 +219,15 @@ const styles = StyleSheet.create({
     lineHeight: 20
   },
   chart: {
-    borderRadius: 12
+    borderRadius: 12,
+    alignSelf: 'center'
+  },
+  chartScrollContent: {
+    width: '100%',
+    alignItems: 'center'
+  },
+  chartCenterWrap: {
+    alignItems: 'center'
   },
   centered: {
     flex: 1,
@@ -214,4 +245,4 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center'
   }
-});
+  });

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -11,16 +11,21 @@ import {
   View,
   useWindowDimensions
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Ionicons } from '@expo/vector-icons';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../constants/categories';
-import { Colors, Radius, Spacing } from '../constants/theme';
+import { Radius, Spacing, useThemeColors } from '../constants/theme';
 import { useFinanceStore } from '../store/financeStore';
 import { getTodayISO, getYesterdayISO, isValidISODate } from '../utils/date';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function AddEditTransactionScreen({ navigation, route }) {
+  const Colors = useThemeColors();
+  const styles = createStyles(Colors);
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  const scrollRef = useRef(null);
   const transactionId = route.params?.transactionId;
   const transactions = useFinanceStore((state) => state.transactions);
   const addTransaction = useFinanceStore((state) => state.addTransaction);
@@ -34,11 +39,16 @@ export function AddEditTransactionScreen({ navigation, route }) {
   const [type, setType] = useState(existing?.type || 'expense');
   const [category, setCategory] = useState(existing?.category || 'Food');
   const [date, setDate] = useState(existing?.date || getTodayISO());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [notes, setNotes] = useState(existing?.notes || '');
   const [errors, setErrors] = useState({});
 
   const categories = useMemo(() => (type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES), [type]);
   const contentWidth = Math.min(width - 24, 920);
+  const selectedDate = useMemo(() => {
+    const parsedDate = new Date(date);
+    return Number.isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+  }, [date]);
 
   const sanitizeAmount = (value) => {
     const cleaned = value.replace(/[^0-9.]/g, '');
@@ -112,21 +122,53 @@ export function AddEditTransactionScreen({ navigation, route }) {
     ]);
   };
 
+  const onCancel = () => {
+    navigation.goBack();
+  };
+
+  const onDateChange = (_, nextDate) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+
+    if (!nextDate) {
+      return;
+    }
+
+    setDate(nextDate.toISOString().slice(0, 10));
+    if (errors.date) {
+      setErrors((prev) => ({ ...prev, date: null }));
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.screen}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 72 : 0}
     >
     <ScrollView
+      ref={scrollRef}
       style={styles.screen}
-      contentContainerStyle={[styles.content, { paddingTop: Spacing.sm + Math.max(insets.top * 0.15, 0) }]}
+      contentContainerStyle={[
+        styles.content,
+        {
+          paddingTop: Spacing.sm + Math.max(insets.top * 0.15, 0),
+          paddingBottom: Math.max(insets.bottom + 56, 72)
+        }
+      ]}
       contentInsetAdjustmentBehavior="automatic"
       automaticallyAdjustKeyboardInsets
       keyboardShouldPersistTaps="handled"
     >
       <View style={[styles.container, { width: contentWidth }]}> 
-      <Text style={styles.title}>{editing ? 'Edit Transaction' : 'Add Transaction'}</Text>
+      <View style={styles.headerRow}>
+        <Pressable style={styles.backButton} onPress={onCancel}>
+          <Ionicons name="chevron-back" size={18} color={Colors.textPrimary} />
+          <Text style={styles.backText}>Back</Text>
+        </Pressable>
+        <Text style={styles.title}>{editing ? 'Edit Transaction' : 'Add Transaction'}</Text>
+      </View>
 
       <View style={styles.segmentRow}>
         {['expense', 'income'].map((value) => {
@@ -159,7 +201,7 @@ export function AddEditTransactionScreen({ navigation, route }) {
           placeholder="Enter amount"
           keyboardType="decimal-pad"
           style={[styles.input, errors.amount && styles.inputError]}
-          placeholderTextColor="#8A9A91"
+          placeholderTextColor={Colors.placeholder}
         />
         {errors.amount ? <Text style={styles.errorText}>{errors.amount}</Text> : null}
       </View>
@@ -173,7 +215,7 @@ export function AddEditTransactionScreen({ navigation, route }) {
               <Pressable
                 key={item.key}
                 onPress={() => setCategory(item.key)}
-                style={[styles.categoryChip, active && { borderColor: item.color, backgroundColor: '#F6FAF8' }]}
+                style={[styles.categoryChip, active && { borderColor: item.color, backgroundColor: Colors.accentSoft }]}
               >
                 <Text style={[styles.categoryText, active && { color: Colors.textPrimary }]}>{item.key}</Text>
               </Pressable>
@@ -184,19 +226,22 @@ export function AddEditTransactionScreen({ navigation, route }) {
 
       <View style={styles.field}>
         <Text style={styles.label}>Date (YYYY-MM-DD)</Text>
-        <TextInput
-          value={date}
-          onChangeText={(value) => {
-            setDate(value.trim());
-            if (errors.date) {
-              setErrors((prev) => ({ ...prev, date: null }));
-            }
-          }}
-          placeholder="2026-04-01"
-          style={[styles.input, errors.date && styles.inputError]}
-          placeholderTextColor="#8A9A91"
-          autoCapitalize="none"
-        />
+        <Pressable
+          style={[styles.input, styles.dateInput, errors.date && styles.inputError]}
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text style={styles.dateValue}>{date}</Text>
+          <Ionicons name="calendar-outline" size={18} color={Colors.textSecondary} />
+        </Pressable>
+        {showDatePicker ? (
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={onDateChange}
+            maximumDate={new Date()}
+          />
+        ) : null}
         <View style={styles.quickDateRow}>
           <Pressable onPress={() => setDate(getTodayISO())} style={styles.quickDateChip}>
             <Text style={styles.quickDateText}>Today</Text>
@@ -218,9 +263,10 @@ export function AddEditTransactionScreen({ navigation, route }) {
               setErrors((prev) => ({ ...prev, notes: null }));
             }
           }}
+          onFocus={() => scrollRef.current?.scrollToEnd({ animated: true })}
           placeholder="Optional note"
           style={[styles.input, styles.notesInput, errors.notes && styles.inputError]}
-          placeholderTextColor="#8A9A91"
+          placeholderTextColor={Colors.placeholder}
           multiline
           maxLength={120}
         />
@@ -236,7 +282,8 @@ export function AddEditTransactionScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (Colors) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: Colors.background
@@ -249,6 +296,27 @@ const styles = StyleSheet.create({
   },
   container: {
     gap: Spacing.md
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: Radius.pill,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.card
+  },
+  backText: {
+    color: Colors.textPrimary,
+    fontSize: 13,
+    fontWeight: '600'
   },
   title: {
     fontSize: 28,
@@ -302,6 +370,16 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     paddingTop: Spacing.sm
   },
+  dateInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  dateValue: {
+    color: Colors.textPrimary,
+    fontSize: 15,
+    fontWeight: '500'
+  },
   quickDateRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
@@ -350,4 +428,4 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     fontWeight: '600'
   }
-});
+  });

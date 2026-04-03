@@ -1,194 +1,52 @@
 # Personal Finance Companion (React Native + Expo)
 
-A mobile-first personal finance app to help users track transactions, understand spending behavior, and stay motivated with savings goals.
+Mobile-first personal finance app to track money flow, visualize spending, and stay aligned with savings goals.
 
-## Project Overview
+## Overview
 
-This project focuses on practical product thinking and UX clarity over complexity.
-
-The app allows users to:
+The app helps users:
 - Track income and expense transactions
 - Search and filter transaction history
-- Set and monitor a monthly savings goal
-- View insights like category spending, weekly comparisons, and trends
-- Get lightweight guidance through a Money Coach message and tracking streak
+- Edit and delete existing entries
+- Set and monitor monthly savings goals
+- View category and trend-based insights
+- Get contextual coaching via streak and spending signals
 
 ## Tech Stack
 
-- Framework: React Native (Expo)
-- Language: JavaScript
-- Navigation: @react-navigation/native + bottom tabs + native stack
-- State Management: Zustand
-- Persistence: AsyncStorage
-- Charts: react-native-chart-kit
+- React Native (Expo)
+- JavaScript
+- React Navigation (Bottom Tabs + Native Stack)
+- Zustand + AsyncStorage persistence
+- react-native-chart-kit
+- @react-native-community/datetimepicker
 
-## Getting Started
+## Setup
 
 ### Prerequisites
 
-- Node.js (LTS recommended)
+- Node.js (LTS)
 - npm
-- Expo CLI (via npx, no global install required)
 
-### Installation
+### Install
 
 ```bash
 npm install
 ```
 
-### Run the App
+### Run
 
 ```bash
 npx expo start
 ```
 
-Then open in:
-- iOS Simulator
-- Android Emulator
-- Expo Go app on device
-- Web (press w in Expo terminal)
-
-### Build Check (Optional)
-
-```bash
-npx expo export --platform web
-```
-
-## Project Structure
-
-```text
-src/
-  components/      Reusable UI components
-  constants/       Theme colors, spacing, categories
-  navigation/      Tab + stack navigation setup
-  screens/         Home, Transactions, Add/Edit, Insights, Goals
-  services/        Storage abstraction layer
-  store/           Zustand global state + persistence
-  utils/           Finance/date/formatter helper functions
-```
-
-## Feature Walkthrough
-
-### 1) Home Dashboard
-
-Purpose: Fast understanding of current financial health.
-
-Includes:
-- Current balance
-- Total income
-- Total expenses
-- Savings goal progress
-- Category breakdown chart
-- Weekly spending trend chart
-- Money Coach summary + tracking streak
-
-### 2) Transaction Tracking
-
-Users can:
-- Add transaction
-- View transaction history
-- Edit transaction
-- Delete transaction
-- Search and filter transactions
-
-Transaction fields:
-- Amount
-- Type (income/expense)
-- Category
-- Date
-- Notes
-
-UX details:
-- Inline validation in add/edit form
-- Quick date helpers (Today/Yesterday)
-- Delete confirmation dialog
-- Long notes truncated safely in list items
-
-### 3) Goal / Challenge Feature
-
-Implemented:
-- Monthly savings goal
-- Real-time progress indicator
-- Motivational progress messaging
-- Tracking streak integrated into coaching context
-
-### 4) Insights Screen
-
-Includes:
-- Spending by category
-- Weekly vs last week comparison
-- Highest spending category
-- Monthly expense trend
-- Tracking streak context
-
-### 5) Mobile UX Quality
-
-Implemented:
-- Bottom tab navigation (Home, Transactions, Insights, Goals)
-- Modal add/edit flow
-- Empty states
-- Loading states
-- Error states for hydration issues
-- Touch-friendly controls and spacing
-- Safe area handling for notch/status regions
-- Responsive max-width layout for larger devices
-
-### 6) Data Handling
-
-Approach:
-- Local-first app using AsyncStorage
-- Zustand persist middleware stores:
-  - transactions
-  - goal state
-
-Behavior:
-- Data persists across app restarts
-- Hydration state handled in global store
-- Hydration error fallback displayed in UI
-
-### 7) Code Structure and State Management
-
-Engineering approach:
-- UI is split into reusable components and screen-level containers
-- Business logic is moved to utility helpers (finance/date/formatters)
-- Global state and mutations centralized in Zustand store
-- Storage implementation abstracted behind service layer
-
-## Assumptions
-
-- Currency is INR by default.
-- Date entry uses YYYY-MM-DD format.
-- Single-user local device usage; no cloud sync or auth.
-- Insights are computed from locally saved transactions only.
-- Notes are optional and capped for better mobile readability.
-
-## Product Decisions
-
-- Prioritized clarity and speed of entry over advanced accounting features.
-- Kept data model intentionally simple for maintainability.
-- Added a lightweight coaching signal to increase engagement without overengineering.
-
-## Known Limitations
-
-- No server sync or multi-device backup.
-- No recurring transaction automation.
-- No advanced budgeting envelopes.
-- No push reminders/notifications in current scope.
-
-## Evaluation Criteria Coverage
-
-This implementation is designed to satisfy:
-- Product thinking
-- Mobile UI/UX quality
-- Creativity (goal + streak + coach)
-- Functionality (CRUD + filters + charts)
-- Code quality
-- State/data handling
-- Responsiveness and device experience
+Open with:
+- Android emulator / device
+- iOS simulator / device
+- Expo Go
+- Web (`w` in Expo terminal)
 
 ## Scripts
-
-From package.json:
 
 ```bash
 npm run start
@@ -197,10 +55,151 @@ npm run ios
 npm run web
 ```
 
+## Build Notes (EAS)
+
+Useful commands:
+
+```bash
+eas build -p android --profile preview-android
+eas build -p ios --profile preview-ios-simulator
+```
+
+### Latest Preview Build (Android)
+
+- APK download: https://expo.dev/artifacts/eas/i9ZChYQ7d8H8g52WCfn8qF.apk
+- Build logs: https://expo.dev/accounts/pawan1-tech/projects/ExoTra/builds/8aecd20c-6dbf-47c3-aa93-e8fdc6aba23b
+
+Scan this QR code on your Android phone to download/install preview APK:
+
+![Preview APK QR](https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fexpo.dev%2Fartifacts%2Feas%2Fi9ZChYQ7d8H8g52WCfn8qF.apk)
+
+## Visual Showcase
+
+### Screenshots
+
+Add screenshots to show the latest UI for:
+- Home
+- Transactions
+- Insights
+- Goals
+
+Suggested file paths:
+- assets/previews/home.png
+- assets/previews/transactions.png
+- assets/previews/insights.png
+- assets/previews/goals.png
+
+Markdown template (paste after adding image files):
+
+```md
+| Home | Transactions |
+|---|---|
+| ![Home](assets/previews/home.png) | ![Transactions](assets/previews/transactions.png) |
+
+| Insights | Goals |
+|---|---|
+| ![Insights](assets/previews/insights.png) | ![Goals](assets/previews/goals.png) |
+```
+
+### GIF Demo
+
+Add short walkthrough GIFs for quick product preview:
+- Transaction flow (add/edit/delete)
+- Insights and goals overview
+
+Suggested file paths:
+- assets/previews/transaction-flow.gif
+- assets/previews/insights-goals.gif
+
+Markdown template:
+
+```md
+![Transaction Flow](assets/previews/transaction-flow.gif)
+
+![Insights and Goals](assets/previews/insights-goals.gif)
+```
+
+## Current Features
+
+### Home
+- Balance summary
+- Income and expense cards
+- Savings progress
+- Category breakdown chart
+- Weekly trend chart
+- Coach message + tracking streak
+
+### Transactions
+- Add / edit / delete transactions
+- Search and type filters (`all`, `income`, `expense`)
+- Grouped list by `Today`, `Yesterday`, and older dates
+- Quick access banner to insights
+- Center floating add button in bottom navigation for fast entry
+
+### Add / Edit Transaction
+- Fields: amount, type, category, date, notes
+- Inline validation
+- Native date picker (calendar) instead of manual date typing
+- Quick date shortcuts (`Today`, `Yesterday`)
+- In-screen back action for accidental entry recovery
+
+### Goals
+- Monthly target setting
+- Real-time progress bar
+- Saved vs target visual chips
+- Motivation messaging based on progress
+
+### Insights
+- Weekly comparison (this week vs last week)
+- Highest spending category
+- Category spending chart
+- Monthly expense trend chart
+- Enhanced visual cards and icons
+
+## UX and Design
+
+- Responsive layout with capped content width on larger screens
+- Safe area-aware spacing
+- Dark mode support (system-aware)
+- Refined iconography and card shapes inspired by modern fintech UI
+- Floating center add button in tab bar
+
+## Data and State
+
+- Local-first storage via AsyncStorage
+- Persisted global store with Zustand
+- Hydration-aware UI with loading/error fallbacks
+- No backend required for core usage
+
+## Project Structure
+
+```text
+src/
+  components/      Reusable UI building blocks
+  constants/       Theme, spacing, categories
+  navigation/      Bottom tabs and stack flow
+  screens/         Home, Transactions, Add/Edit, Insights, Goals
+  services/        Persistence/storage layer
+  store/           Zustand state + actions
+  utils/           Finance, date, formatter helpers
+```
+
+## Assumptions
+
+- Currency default is INR.
+- Single-user local usage.
+- Insights are computed only from locally stored transactions.
+
+## Known Limitations
+
+- No cloud sync / account login
+- No recurring transaction automation
+- No push notifications yet
+- No CSV import/export yet
+
 ## Future Enhancements
 
-- Notification reminders for daily tracking
-- CSV export/import
-- Optional dark mode
+- Recurring transaction templates
 - Budget limits per category
-- Cloud sync and authentication
+- Export/import utilities
+- Cloud sync + auth
