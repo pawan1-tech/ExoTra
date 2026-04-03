@@ -4,13 +4,9 @@ Mobile-first personal finance app to track money flow, visualize spending, and s
 
 ## Screenshots
 
-| Home | Transactions |
-|---|---|
-| ![Home](assets/previews/home.png) | ![Transactions](assets/previews/transactions.png) |
-
-| Insights | Goals |
-|---|---|
-| ![Insights](assets/previews/insights.png) | ![Goals](assets/previews/goals.png) |
+| Home | Transactions | Insights | Goals |
+|---|---|---|---|
+| ![Home](assets/previews/home.png) | ![Transactions](assets/previews/transactions.png) | ![Insights](assets/previews/insights.png) | ![Goals](assets/previews/goals.png) |
 
 ## Overview
 
