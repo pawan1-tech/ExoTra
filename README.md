@@ -1,58 +1,113 @@
 # Personal Finance Companion (React Native + Expo)
 
-Mobile-first personal finance app to track money flow, visualize spending, and stay aligned with savings goals.
+Personal Finance Companion is a mobile-first expense tracking application built with React Native and Expo. It helps users record transactions quickly, monitor savings goals, and understand spending trends through simple, actionable insights.
 
 ## Screenshots
 
 | Home | Transactions | Insights | Goals |
 |---|---|---|---|
-| ![Home](assets/previews/home.png) | ![Transactions](assets/previews/transactions.png) | ![Insights](assets/previews/insights.png) | ![Goals](assets/previews/goals.png) |
+| <img src="assets/previews/home.png" alt="Home" width="220" /> | <img src="assets/previews/transactions.png" alt="Transactions" width="220" /> | <img src="assets/previews/insights.png" alt="Insights" width="220" /> | <img src="assets/previews/goals.png" alt="Goals" width="220" /> |
 
-## Overview
+## Table of Contents
 
-The app helps users:
-- Track income and expense transactions
+- Project Overview
+- Key Features
+- Tech Stack
+- Getting Started
+- Running on Devices
+- Build and Preview (EAS)
+- Project Structure
+- State and Data Handling
+- Assumptions
+- Known Limitations
+- Troubleshooting
+- Future Enhancements
+
+## Project Overview
+
+This project prioritizes product clarity and practical usability over feature overload. The app is designed for fast daily tracking and quick review of financial behavior.
+
+Core user outcomes:
+- Capture income and expense transactions
 - Search and filter transaction history
-- Edit and delete existing entries
-- Set and monitor monthly savings goals
-- View category and trend-based insights
-- Get contextual coaching via streak and spending signals
+- Edit and delete existing records
+- Set and track monthly savings targets
+- Understand patterns through weekly and monthly insights
+- Receive contextual guidance using streak and coach messaging
+
+## Key Features
+
+### Home Dashboard
+- Current balance overview
+- Income and expense summary cards
+- Savings progress bar
+- Category breakdown and weekly trend charts
+- Money coach message with tracking streak
+
+### Transactions
+- Add, edit, and delete transactions
+- Search by amount, category, or notes
+- Filter by type (`all`, `income`, `expense`)
+- Sectioned list grouped as `Today`, `Yesterday`, and older dates
+- Center floating add button in bottom navigation for quick entry
+
+### Add/Edit Transaction
+- Fields: amount, type, category, date, notes
+- Native calendar picker for date selection
+- Quick date shortcuts (`Today`, `Yesterday`)
+- Inline validation and delete confirmation
+- In-screen back action for accidental opens
+
+### Goals
+- Monthly savings target input
+- Real-time progress visualization
+- Saved vs target summary chips
+- Motivation message based on progress state
+
+### Insights
+- Weekly comparison (`this week` vs `last week`)
+- Highest spending category
+- Category-wise expense visualization
+- Monthly expense trend chart
 
 ## Tech Stack
 
-- React Native (Expo)
+- React Native (Expo SDK 54)
 - JavaScript
 - React Navigation (Bottom Tabs + Native Stack)
-- Zustand + AsyncStorage persistence
-- react-native-chart-kit
-- @react-native-community/datetimepicker
+- Zustand for global state
+- AsyncStorage for persistence
+- react-native-chart-kit for charting
+- @react-native-community/datetimepicker for native date selection
 
-## Setup
+## Getting Started
 
 ### Prerequisites
 
-- Node.js (LTS)
+- Node.js (LTS recommended)
 - npm
 
-### Install
+### Installation
 
 ```bash
 npm install
 ```
 
-### Run
+### Start Development Server
 
 ```bash
 npx expo start
 ```
 
-Open with:
-- Android emulator / device
-- iOS simulator / device
-- Expo Go
-- Web (`w` in Expo terminal)
+## Running on Devices
 
-## Scripts
+From the Expo terminal, run on:
+- Android emulator/device (`a`)
+- iOS simulator/device (`i`)
+- Web (`w`)
+- Expo Go (scan QR)
+
+Available npm scripts:
 
 ```bash
 npm run start
@@ -61,105 +116,80 @@ npm run ios
 npm run web
 ```
 
-## Build Notes (EAS)
+## Build and Preview (EAS)
 
-Useful commands:
+Build commands:
 
 ```bash
 eas build -p android --profile preview-android
 eas build -p ios --profile preview-ios-simulator
 ```
 
-### Latest Preview Build (Android)
+Latest Android preview:
+- APK: https://expo.dev/artifacts/eas/i9ZChYQ7d8H8g52WCfn8qF.apk
+- Logs: https://expo.dev/accounts/pawan1-tech/projects/ExoTra/builds/8aecd20c-6dbf-47c3-aa93-e8fdc6aba23b
 
-- APK download: https://expo.dev/artifacts/eas/i9ZChYQ7d8H8g52WCfn8qF.apk
-- Build logs: https://expo.dev/accounts/pawan1-tech/projects/ExoTra/builds/8aecd20c-6dbf-47c3-aa93-e8fdc6aba23b
-
-Scan this QR code on your Android phone to download/install preview APK:
+Install via QR:
 
 ![Preview APK QR](https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fexpo.dev%2Fartifacts%2Feas%2Fi9ZChYQ7d8H8g52WCfn8qF.apk)
-
-## Current Features
-
-### Home
-- Balance summary
-- Income and expense cards
-- Savings progress
-- Category breakdown chart
-- Weekly trend chart
-- Coach message + tracking streak
-
-### Transactions
-- Add / edit / delete transactions
-- Search and type filters (`all`, `income`, `expense`)
-- Grouped list by `Today`, `Yesterday`, and older dates
-- Quick access banner to insights
-- Center floating add button in bottom navigation for fast entry
-
-### Add / Edit Transaction
-- Fields: amount, type, category, date, notes
-- Inline validation
-- Native date picker (calendar) instead of manual date typing
-- Quick date shortcuts (`Today`, `Yesterday`)
-- In-screen back action for accidental entry recovery
-
-### Goals
-- Monthly target setting
-- Real-time progress bar
-- Saved vs target visual chips
-- Motivation messaging based on progress
-
-### Insights
-- Weekly comparison (this week vs last week)
-- Highest spending category
-- Category spending chart
-- Monthly expense trend chart
-- Enhanced visual cards and icons
-
-## UX and Design
-
-- Responsive layout with capped content width on larger screens
-- Safe area-aware spacing
-- Dark mode support (system-aware)
-- Refined iconography and card shapes inspired by modern fintech UI
-- Floating center add button in tab bar
-
-## Data and State
-
-- Local-first storage via AsyncStorage
-- Persisted global store with Zustand
-- Hydration-aware UI with loading/error fallbacks
-- No backend required for core usage
 
 ## Project Structure
 
 ```text
 src/
-  components/      Reusable UI building blocks
-  constants/       Theme, spacing, categories
-  navigation/      Bottom tabs and stack flow
+  components/      Reusable UI components
+  constants/       Theme tokens, spacing, categories
+  navigation/      Bottom tab + stack navigation
   screens/         Home, Transactions, Add/Edit, Insights, Goals
-  services/        Persistence/storage layer
-  store/           Zustand state + actions
-  utils/           Finance, date, formatter helpers
+  services/        Storage abstraction
+  store/           Zustand state and actions
+  utils/           Finance/date/format helpers
 ```
+
+## State and Data Handling
+
+- Local-first architecture using AsyncStorage
+- Persisted Zustand store for transactions and goal state
+- Explicit hydration handling with loading/error fallbacks
+- Insight metrics are derived from local transaction data
 
 ## Assumptions
 
-- Currency default is INR.
-- Single-user local usage.
-- Insights are computed only from locally stored transactions.
+- Currency defaults to INR
+- App is single-user and local-device focused
+- No backend or authentication in current scope
+- Insights are computed from locally stored transactions only
 
 ## Known Limitations
 
-- No cloud sync / account login
+- No cloud sync or account login
 - No recurring transaction automation
-- No push notifications yet
-- No CSV import/export yet
+- No push reminders
+- No CSV import/export
+
+## Troubleshooting
+
+### No development build installed error
+
+If Expo reports missing development build, use one of these:
+- Run with Expo Go: `npx expo start --go`
+- Or install dev build: `eas build -p android --profile development`
+
+### EAS profile missing error
+
+If a profile is missing, ensure the same profile name exists in `eas.json` before running build commands.
+
+### Date picker not appearing
+
+Confirm dependency is installed:
+
+```bash
+npx expo install @react-native-community/datetimepicker
+```
 
 ## Future Enhancements
 
 - Recurring transaction templates
-- Budget limits per category
-- Export/import utilities
-- Cloud sync + auth
+- Category budget limits
+- CSV import/export
+- Cloud sync and authentication
